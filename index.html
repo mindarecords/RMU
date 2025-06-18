@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Request Doc Tracking Number</title>
+</head>
+<body>
+  <h2>Request Document Tracking Number</h2>
+  <form id="docForm">
+    <label>Document Type:
+      <select name="docType" required>
+        <option value="internal_documents">Internal Documents</option>
+        <option value="incoming_technical">Incoming Technical</option>
+        <option value="outgoing">Outgoing</option>
+      </select>
+    </label><br><br>
+
+    <label>Date of Document: <input type="date" name="date" required></label><br><br>
+    <label>Sender/Agency: <input type="text" name="senderAgency" required></label><br><br>
+    <label>Sender's Name: <input type="text" name="senderName" required></label><br><br>
+    <label>Signatory: <input type="text" name="signatory"></label><br><br>
+    <label>Description: <textarea name="description" required></textarea></label><br><br>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <p id="result"></p>
+
+  <script>
+    const form = document.getElementById('docForm');
+    const result = document.getElementById('result');
+    
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const jsonData = {};
+      formData.forEach((value, key) => {
+        jsonData[key] = value;
+      });
+
+      fetch('YOUR_WEB_APP_URL_HERE', {
+        method: 'POST',
+        body: JSON.stringify(jsonData),
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          result.textContent = `Tracking Number Generated: ${data.trackingNumber}`;
+        } else {
+          result.textContent = 'Error: ' + data.message;
+        }
+        form.reset();
+      })
+      .catch(err => {
+        result.textContent = 'Error submitting form.';
+        console.error(err);
+      });
+    });
+  </script>
+</body>
+</html>
